@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Roles Action -->
+    <record id="action_planning_role" model="ir.actions.act_window">
+        <field name="name">Roles</field>
+        <field name="res_model">planning.role</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- Employee Roles Menu Item -->
+    <menuitem id="menu_employee_role"
+        name="Roles"
+        parent="hr.menu_config_employee"
+        action="action_planning_role"
+        groups="hr.group_hr_manager"
+        sequence="5" />
+
+</odoo>

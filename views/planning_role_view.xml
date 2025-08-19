@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Planning Role Tree View Inherited-->
+    <record id="planning_role_tree_inherit_view" model="ir.ui.view">
+        <field name="name">planning.role.tree.inherit.view</field>
+        <field name="model">planning.role</field>
+        <field name="inherit_id" ref="planning.planning_role_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='resource_ids']" position="after">
+                <field name="factor_bu" />
+                <field name="cost" />
+                <field name="currency_id" />
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

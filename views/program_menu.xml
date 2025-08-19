@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <!-- Program Action -->
+    <record id="action_program_program" model="ir.actions.act_window">
+        <field name="name">Programs</field>
+        <field name="res_model">program.program</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Programs Menu Item -->
+    <menuitem id="menu_programs"
+        name="Programs"
+        parent="project.menu_project_config"
+        action="action_program_program"
+        sequence="6" />
+
+</odoo>
