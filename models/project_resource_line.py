@@ -45,12 +45,12 @@ class ProjectResourceLine(models.Model):
         store=True,
         readonly=True,
     )
-    subtotal_bu = fields.Monetary(
+    subtotal_bu = fields.Float(
         string="Subtotal BU",
         compute="_compute_subtotal_bu",
         readonly=True,
         store=True,
-        currency_field="currency_id",
+        digits=(16, 2),
     )
 
     subtotal_price = fields.Monetary(
