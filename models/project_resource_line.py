@@ -17,7 +17,7 @@ class ProjectResourceLine(models.Model):
     role_id = fields.Many2one(
         "planning.role",
         string="Role",
-        required=True,
+        required=False,
         help="Role associated with this resource line.",
     )
 
@@ -26,6 +26,12 @@ class ProjectResourceLine(models.Model):
         related="role_id.cost",
         currency_field="currency_id",
         store=True,
+    )
+
+    employee_id = fields.Many2one(
+        "hr.employee",
+        string="Employee",
+        help="Employee assigned to this resource line.",
     )
 
     price_per_hour = fields.Monetary(
