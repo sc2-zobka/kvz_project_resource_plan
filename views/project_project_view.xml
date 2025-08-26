@@ -17,9 +17,12 @@
                             <field name="role_cost" />
                             <field name="currency_id" column_invisible="1" />
                             <field name="quantity_hours" />
-                            <field name="subtotal_price" string="Subtotal Price" sum="Total Price" />
+                            <field name="subtotal_price" string="Subtotal Price" />
                         </tree>
                     </field>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="total_resource_amount" string="Total" />
+                    </group>
                 </page>
             </xpath>
         </field>
