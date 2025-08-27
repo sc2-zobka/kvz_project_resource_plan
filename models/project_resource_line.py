@@ -21,11 +21,9 @@ class ProjectResourceLine(models.Model):
         help="Role associated with this resource line.",
     )
 
-    role_cost = fields.Monetary(
+    employee_cost = fields.Monetary(
         string="Hourly Cost",
-        related="role_id.cost",
-        currency_field="currency_id",
-        store=True,
+        related="employee_id.hourly_cost",
         help="Cost per hour for this role.",
     )
 

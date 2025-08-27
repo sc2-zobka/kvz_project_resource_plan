@@ -14,7 +14,7 @@
                             <field name="employee_id" options="{'no_create': True}" />
                             <field name="role_id" options="{'no_create': True}" />
                             <field name="price_per_hour" />
-                            <field name="role_cost" />
+                            <field name="employee_cost" />
                             <field name="currency_id" column_invisible="1" />
                             <field name="quantity_hours" />
                             <field name="subtotal_price" string="Subtotal Price" />
