@@ -67,3 +67,11 @@ class ProjectResourceLine(models.Model):
     def _compute_subtotal_price(self):
         for line in self:
             line.subtotal_price = line.quantity_hours * line.price_per_hour
+
+    @api.onchange("employee_id")
+    def _onchange_employee_id(self):
+        for line in self:
+            if line.employee_id and line.employee_id.default_planning_role_id:
+                line.role_id = line.employee_id.default_planning_role_id
+            else:
+                line.role_id = False
