@@ -21,11 +21,16 @@ class ProjectResourceLine(models.Model):
         help="Role associated with this resource line.",
     )
 
-    role_cost = fields.Monetary(
-        string="Role Cost",
-        related="role_id.cost",
-        currency_field="currency_id",
-        store=True,
+    employee_cost = fields.Monetary(
+        string="Hourly Cost",
+        related="employee_id.hourly_cost",
+        help="Cost per hour for this role.",
+    )
+
+    employee_id = fields.Many2one(
+        "hr.employee",
+        string="Employee",
+        help="Employee assigned to this resource line.",
     )
 
     employee_id = fields.Many2one(
@@ -35,14 +40,16 @@ class ProjectResourceLine(models.Model):
     )
 
     price_per_hour = fields.Monetary(
-        string="Price per Hour",
+        string="Unit Price",
         required=True,
         currency_field="currency_id",
+        help="Hourly rate for this resource to be sold.",
     )
-    amount_of_hours = fields.Float(
-        string="Amount of Hours",
+    quantity_hours = fields.Float(
+        string="Quantity Hours",
         required=True,
         digits=(16, 2),
+        help="Total number of hours estimated for this resource.",
     )
     currency_id = fields.Many2one(
         "res.currency",
@@ -51,14 +58,6 @@ class ProjectResourceLine(models.Model):
         store=True,
         readonly=True,
     )
-    subtotal_bu = fields.Float(
-        string="Subtotal BU",
-        compute="_compute_subtotal_bu",
-        readonly=True,
-        store=True,
-        digits=(16, 2),
-    )
-
     subtotal_price = fields.Monetary(
         string="Subtotal Price",
         compute="_compute_subtotal_price",
@@ -67,14 +66,16 @@ class ProjectResourceLine(models.Model):
         currency_field="currency_id",
     )
 
-    # Subtotal (BU):  amount_of_hours by role_id.factor_bu
-    @api.depends("amount_of_hours", "role_id.factor_bu")
-    def _compute_subtotal_bu(self):
-        for line in self:
-            line.subtotal_bu = line.amount_of_hours * line.role_id.factor_bu
-
-    # Subtotal (Price):  amount_of_hours by price_per_hour
-    @api.depends("amount_of_hours", "price_per_hour")
+    # Subtotal (Price):  quantity_hours by price_per_hour
+    @api.depends("quantity_hours", "price_per_hour")
     def _compute_subtotal_price(self):
         for line in self:
-            line.subtotal_price = line.amount_of_hours * line.price_per_hour
+            line.subtotal_price = line.quantity_hours * line.price_per_hour
+
+    @api.onchange("employee_id")
+    def _onchange_employee_id(self):
+        for line in self:
+            if line.employee_id and line.employee_id.default_planning_role_id:
+                line.role_id = line.employee_id.default_planning_role_id
+            else:
+                line.role_id = False
