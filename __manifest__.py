@@ -13,6 +13,7 @@
         "views/planning_role_view.xml",
         "views/employee_menu.xml",
         "views/project_project_view.xml",
+        "report/project_resource_plan_report_views.xml",
     ],
     "installable": True,
     "application": False,
