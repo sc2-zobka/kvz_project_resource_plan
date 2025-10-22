@@ -10,12 +10,16 @@
                 <!-- Default rows and columns -->
                 <field name="employee_id" type="row"/>
                 <field name="project_id" type="row"/>
+                <field name="date" type="col" interval="month"/>
+
                 <!-- Measures -->
-                <field name="hours" type="measure" widget="float_time"/>
-                <field name="price_per_hour" type="measure"/>
-                <field name="cost_per_hour" type="measure"/>
-                <field name="total_price" type="measure"/>
-                <field name="total_cost" type="measure"/>
+                <field name="hours" string="Hours Spent" type="measure" widget="float_time"/>
+                <field name="timesheet_cost" type="measure" />
+                <field name="timesheet_revenue" type="measure" />
+                
+
+
+                
             </pivot>
         </field>
     </record>
