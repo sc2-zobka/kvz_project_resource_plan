@@ -13,6 +13,9 @@ class ProjectResourcePlanReport(models.Model):
     project_id = fields.Many2one('project.project', string='Project', readonly=True)
     role_id = fields.Many2one('planning.role', string='Role', readonly=True)
     date = fields.Date(string='Date', readonly=True)
+    department_id = fields.Many2one('hr.department', string='Department', readonly=True)
+    month = fields.Char(string='Month', readonly=True)
+    year = fields.Char(string='Year', readonly=True)
     
     # Measures
     hours = fields.Float(string='Hours', readonly=True, digits=(16, 2))
@@ -28,11 +31,6 @@ class ProjectResourcePlanReport(models.Model):
     # Utility fields
     currency_id = fields.Many2one('res.currency', string='Currency', readonly=True)
     company_id = fields.Many2one('res.company', string='Company', readonly=True)
-    
-    # Additional useful dimensions
-    department_id = fields.Many2one('hr.department', string='Department', readonly=True)
-    month = fields.Char(string='Month', readonly=True)
-    year = fields.Char(string='Year', readonly=True)
 
     def init(self):
         """
@@ -56,7 +54,7 @@ class ProjectResourcePlanReport(models.Model):
                     SUM(aal.unit_amount) AS hours,
                     -- Get price per hour from resource line or use a default
                     COALESCE(prl.price_per_hour, 0) AS price_per_hour,
-                    -- Get cost per hour from employee or from role
+                    -- ASK MARLON ----> Get cost per hour from employee or from role
                     COALESCE(emp.hourly_cost, pr.cost, 0) AS cost_per_hour,
                     -- Calculate totals
                     SUM(aal.unit_amount) * COALESCE(prl.price_per_hour, 0) AS total_price,

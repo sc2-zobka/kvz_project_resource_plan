@@ -20,20 +20,6 @@
         </field>
     </record>
 
-    <!-- Graph View -->
-    <record id="view_project_resource_plan_report_graph" model="ir.ui.view">
-        <field name="name">project.resource.plan.report.graph</field>
-        <field name="model">project.resource.plan.report</field>
-        <field name="arch" type="xml">
-            <graph string="Project Resource Analysis" type="bar" sample="1">
-                <field name="employee_id"/>
-                <field name="hours" type="measure" widget="float_time"/>
-                <field name="total_price" type="measure"/>
-                <field name="total_cost" type="measure"/>
-            </graph>
-        </field>
-    </record>
-
     <!-- Search View -->
     <record id="view_project_resource_plan_report_search" model="ir.ui.view">
         <field name="name">project.resource.plan.report.search</field>
@@ -58,6 +44,13 @@
                         domain="[('project_id.user_id', '=', uid)]"/>
                 <filter string="My Team" name="my_team"
                         domain="[('employee_id.parent_id.user_id', '=', uid)]"/>
+                <separator/>
+                
+                <filter string="Contrato Indefinido" name="contract_type_indefinido"
+                        domain="[('employee_id.contract_id.contract_type_id.name', '=', 'Indefinido')]"/>
+                <filter string="Pago Fijo Mensual" name="structure_type_employee"
+                        domain="[('employee_id.contract_id.structure_type_id.name', '=', 'Pago fijo mensual' )]"/>
+                <separator/>
                 
                 <!-- Group By -->
                 <group expand="1" string="Group By">
@@ -83,7 +76,7 @@
     <record id="action_project_resource_plan_report" model="ir.actions.act_window">
         <field name="name">Project Resource Analysis</field>
         <field name="res_model">project.resource.plan.report</field>
-        <field name="view_mode">pivot,graph,tree</field>
+        <field name="view_mode">pivot</field>
         <field name="search_view_id" ref="view_project_resource_plan_report_search"/>
         <field name="context">{'search_default_group_employee': 1, 'search_default_group_project': 1}</field>
         <field name="help" type="html">
