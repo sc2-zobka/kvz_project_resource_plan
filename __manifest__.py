@@ -7,7 +7,12 @@
     "website": "https://www.kvz.cl",
     "category": "Human Resources",
     "license": "LGPL-3",
-    "depends": ["planning", "project", "resource"],
+    "depends": [
+        "planning",
+        "project",
+        "resource",
+        "sale_project",
+    ],
     "data": [
         "security/ir.model.access.csv",
         "views/planning_role_view.xml",

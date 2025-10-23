@@ -13,9 +13,7 @@ class ProjectResourcePlanReport(models.Model):
     project_id = fields.Many2one("project.project", string="Project", readonly=True)
     task_id = fields.Many2one("project.task", string="Task", readonly=True)
     name = fields.Char(string="Description", readonly=True)
-    role_id = fields.Many2one("planning.role", string="Role", readonly=True)
     date = fields.Date(string="Date", readonly=True)
-    department_id = fields.Many2one("hr.department", string="Department", readonly=True)
     month = fields.Char(string="Month", readonly=True)
     year = fields.Char(string="Year", readonly=True)
 
@@ -25,10 +23,6 @@ class ProjectResourcePlanReport(models.Model):
     timesheet_revenue = fields.Monetary(
         string="Timesheet Revenue", readonly=True, currency_field="currency_id"
     )
-    # price_per_hour = fields.Float(string='Price per Hour', readonly=True)
-    # cost_per_hour = fields.Float(string='Cost per Hour', readonly=True)
-    # total_price = fields.Float(string='Total Price', readonly=True)
-    # total_cost = fields.Float(string='Total Cost', readonly=True)
 
     # Utility fields
     currency_id = fields.Many2one("res.currency", string="Currency", readonly=True)
@@ -48,8 +42,6 @@ class ProjectResourcePlanReport(models.Model):
                     aal.project_id,
                     aal.task_id,
                     aal.name,
-                    emp.department_id,
-                    prl.role_id,
                     aal.date,
                     TO_CHAR(aal.date, 'YYYY-MM') AS month,
                     TO_CHAR(aal.date, 'YYYY') AS year,
@@ -57,14 +49,7 @@ class ProjectResourcePlanReport(models.Model):
                     aal.currency_id,
                     SUM(aal.unit_amount) AS hours,
                     -1 * SUM(aal.unit_amount * COALESCE(emp.hourly_cost, 0)) AS timesheet_cost,
-                    SUM(aal.unit_amount * COALESCE(prl.price_per_hour, 0)) AS timesheet_revenue
-                    -- Get price per hour from resource line or use a default
-                    -- COALESCE(prl.price_per_hour, 0) AS price_per_hour,
-                    -- ASK MARLON ----> Get cost per hour from employee or from role
-                    -- COALESCE(emp.hourly_cost, pr.cost, 0) AS cost_per_hour,
-                    -- Calculate totals
-                    -- SUM(aal.unit_amount) * COALESCE(prl.price_per_hour, 0) AS total_price,
-                    -- SUM(aal.unit_amount) * COALESCE(emp.hourly_cost, pr.cost, 0) AS total_cost
+                    SUM(aal.unit_amount * COALESCE(prl.price_per_hour, 0)) AS timesheet_revenue                    
                 FROM
                     account_analytic_line aal
                     INNER JOIN hr_employee emp ON aal.employee_id = emp.id
@@ -72,21 +57,24 @@ class ProjectResourcePlanReport(models.Model):
                     LEFT JOIN project_resource_line prl 
                         ON prl.project_id = pp.id 
                         AND prl.employee_id = emp.id
-                    LEFT JOIN planning_role pr ON prl.role_id = pr.id
                 WHERE
                     aal.project_id IS NOT NULL
+                    AND pp.revenue_and_cost_report = TRUE
+                    AND pp.stage_id = (
+                        SELECT res_id 
+                        FROM ir_model_data 
+                        WHERE module = 'project' 
+                        AND name = 'project_project_stage_1'
+                        AND model = 'project.project.stage'
+                        LIMIT 1
+                    )
                 GROUP BY
                     aal.employee_id,
                     aal.project_id,
                     aal.task_id,
                     aal.name,
-                    emp.department_id,
-                    prl.role_id,
                     aal.date,
                     aal.company_id,
                     aal.currency_id
-                    -- prl.price_per_hour,
-                    -- emp.hourly_cost,
-                    -- pr.cost
             );
         """)

@@ -29,4 +29,21 @@
         </field>
     </record>
 
+    <!-- Inherit Sale Project Form View -->
+    <record id="project_project_form_inherit_sale_project" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.sale.project.revenue.cost</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="sale_project.view_edit_project_inherit_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_sales_invoicing']" position="after">
+            <group name="group_revenue_cost" string="Revenue &amp; Cost Report" col="1" class="row mt16 o_settings_container col-lg-6">
+                <div>
+                    <setting class="col-lg-12" help="Enable revenue and cost reporting for this project">
+                        <field name="revenue_and_cost_report"/>
+                    </setting>
+                </div>
+            </group>
+        </xpath>
+        </field>
+    </record>
 </odoo>
