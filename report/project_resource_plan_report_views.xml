@@ -1,103 +1,112 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
 
-        <!-- Pivot View -->
-        <record id="view_project_resource_plan_report_pivot" model="ir.ui.view">
-                <field name="name">project.resource.plan.report.pivot</field>
-                <field name="model">project.resource.plan.report</field>
-                <field name="arch" type="xml">
-                        <pivot string="Project Resource Analysis" sample="1" disable_linking="1">
-                                <!-- Default rows and columns -->
-                                <field name="employee_id" type="row" />
-                                <field name="project_id" type="row" />
-                                <field name="date" type="col" interval="month" />
+	<record id="view_project_resource_plan_report_pivot" model="ir.ui.view">
+		<field name="name">project.resource.plan.report.pivot</field>
+		<field name="model">project.resource.plan.report</field>
+		<field name="arch" type="xml">
+			<pivot string="Project Resource Analysis"
+				sample="1"
+				disable_linking="1"
+				js_class="lazy_pivot">
+				<!-- Start with just two levels -->
+				<field name="employee_id" type="row" />
+				<field name="project_id" type="row" />
+				<!-- Task and name are available but not expanded by default -->
+				<field name="task_id" type="row" invisible="1" />
+				<field name="name" type="row" invisible="1" />
 
-                                <!-- Measures -->
-                                <field name="hours" string="Hours Spent" type="measure" widget="float_time" />
-                                <field name="timesheet_cost" type="measure" />
-                                <field name="timesheet_revenue" type="measure" />
-                        </pivot>
-                </field>
-        </record>
+				<!-- Date grouping -->
+				<field name="date" type="col" interval="month" />
 
-        <!-- Search View -->
-        <record id="view_project_resource_plan_report_search" model="ir.ui.view">
-                <field name="name">project.resource.plan.report.search</field>
-                <field name="model">project.resource.plan.report</field>
-                <field name="arch" type="xml">
-                        <search string="Project Resource Analysis">
-                                <!-- Search fields -->
-                                <field name="employee_id" />
-                                <field name="project_id" />
+				<!-- Measures -->
+				<field name="hours" string="Hours Spent" type="measure" widget="float_time" />
+				<field name="timesheet_cost" type="measure" />
+				<field name="timesheet_revenue" type="measure" />
+			</pivot>
+		</field>
+	</record>
 
-                                <!-- Filters -->
-                                <filter string="This Month" name="this_month"
-                                        domain="[('date', '&gt;=', (context_today()).strftime('%Y-%m-01')),
+	<!-- Search View -->
+	<record id="view_project_resource_plan_report_search" model="ir.ui.view">
+		<field name="name">project.resource.plan.report.search</field>
+		<field name="model">project.resource.plan.report</field>
+		<field name="arch" type="xml">
+			<search string="Project Resource Analysis">
+				<!-- Search fields -->
+				<field name="employee_id" />
+				<field name="project_id" />
+
+				<!-- Filters -->
+				<filter string="This Month" name="this_month"
+					domain="[('date', '&gt;=', (context_today()).strftime('%Y-%m-01')),
                                 ('date', '&lt;', (context_today() + relativedelta(months=1)).strftime('%Y-%m-01'))]" />
-                                <filter string="Last Month" name="last_month"
-                                        domain="[('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01')),
+				<filter string="Last Month" name="last_month"
+					domain="[('date', '&gt;=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01')),
                                 ('date', '&lt;', (context_today()).strftime('%Y-%m-01'))]" />
-                                <filter string="Last 3 Months" name="last_3_months"
-                                        domain="[('date', '&gt;=', (context_today() - relativedelta(months=3)).strftime('%Y-%m-01'))]" />
-                                <separator />
-                                <filter string="Active Projects" name="active_projects"
-                                        domain="[('project_id.active', '=', True)]" />
-                                <filter string="With Hours" name="with_hours"
-                                        domain="[('hours', '&gt;', 0)]" />
-                                <separator />
-                                <filter string="My Projects" name="my_projects"
-                                        domain="[('project_id.user_id', '=', uid)]" />
-                                <separator />
-                                <filter string="Contrato Indefinido" name="contract_type_indefinido"
-                                        domain="[('employee_id.contract_id.contract_type_id.name', '=', 'Indefinido')]" />
-                                <filter string="Pago Fijo Mensual" name="structure_type_employee"
-                                        domain="[('employee_id.contract_id.structure_type_id.name', '=', 'Pago fijo mensual')]" />
-                                <separator />
+				<filter string="Last 3 Months" name="last_3_months"
+					domain="[('date', '&gt;=', (context_today() - relativedelta(months=3)).strftime('%Y-%m-01'))]" />
+				<separator />
+				<filter string="Active Projects" name="active_projects"
+					domain="[('project_id.active', '=', True)]" />
+				<filter string="With Hours" name="with_hours"
+					domain="[('hours', '&gt;', 0)]" />
+				<separator />
+				<filter string="My Projects" name="my_projects"
+					domain="[('project_id.user_id', '=', uid)]" />
+				<separator />
+				<filter string="Contrato Indefinido" name="contract_type_indefinido"
+					domain="[('employee_id.contract_id.contract_type_id.name', '=', 'Indefinido')]" />
+				<filter string="Pago Fijo Mensual" name="structure_type_employee"
+					domain="[('employee_id.contract_id.structure_type_id.name', '=', 'Pago fijo mensual')]" />
+				<separator />
 
-                                <!-- Group By -->
-                                <group expand="1" string="Group By">
-                                        <filter string="Employee" name="group_employee"
-                                                context="{'group_by': 'employee_id'}" />
-                                        <filter string="Project" name="group_project"
-                                                context="{'group_by': 'project_id'}" />
-                                        <filter string="Task" name="group_task"
-                                                context="{'group_by': 'task_id'}" />
-                                        <separator />
-                                        <filter string="Month" name="group_month"
-                                                context="{'group_by': 'month'}" />
-                                        <filter string="Year" name="group_year"
-                                                context="{'group_by': 'year'}" />
-                                </group>
-                        </search>
-                </field>
-        </record>
+				<!-- Group By -->
+				<group expand="1" string="Group By">
+					<filter string="Employee" name="group_employee"
+						context="{'group_by': 'employee_id'}" />
+					<filter string="Project" name="group_project"
+						context="{'group_by': 'project_id'}" />
+					<filter string="Task" name="group_task"
+						context="{'group_by': 'task_id'}" />
+					<separator />
+					<filter string="Date" name="group_date"
+						context="{'group_by': 'date'}" />
+					<filter string="Month" name="group_month"
+						context="{'group_by': 'date:month'}" />
+					<filter string="Year" name="group_year"
+						context="{'group_by': 'date:year'}" />
+				</group>
+			</search>
+		</field>
+	</record>
 
-        <!-- Action -->
-        <record id="action_project_resource_plan_report" model="ir.actions.act_window">
-                <field name="name">Project Resource Analysis</field>
-                <field name="res_model">project.resource.plan.report</field>
-                <field name="view_mode">pivot</field>
-                <field name="search_view_id" ref="view_project_resource_plan_report_search" />
-                <field name="context">{'search_default_group_employee': 1,
-                        'search_default_active_projects': 1, 'search_default_with_hours': 1,
-                        'search_default_last_3_months': 1}</field>
-                <field name="help" type="html">
-                        <p class="o_view_nocontent_smiling_face">
-                                No timesheet data found!
-                        </p>
-                        <p>
-                                This report analyzes employee hours by project with pricing and cost
-                                calculations.
-                                Start logging timesheets to see the analysis.
-                        </p>
-                </field>
-        </record>
+	<!-- Action -->
+	<record id="action_project_resource_plan_report" model="ir.actions.act_window">
+		<field name="name">Project Resource Analysis</field>
+		<field name="res_model">project.resource.plan.report</field>
+		<field name="view_mode">pivot</field>
+		<field name="search_view_id" ref="view_project_resource_plan_report_search" />
+		<field name="context">{'search_default_group_employee': 1,
+			'search_default_active_projects': 1, 'search_default_with_hours': 1,
+			'search_default_last_3_months': 1}</field>
+		<field name="help" type="html">
+			<p class="o_view_nocontent_smiling_face">
+				No timesheet data found!
+			</p>
+			<p>
+				This report analyzes employee hours by project with pricing and cost
+				calculations.
+				Start logging timesheets to see the analysis.
+			</p>
+		</field>
+	</record>
 
-        <!-- Menu Item -->
-        <menuitem id="menu_project_resource_plan_report"
-                name="Project Resource Analysis"
-                parent="hr_timesheet.menu_timesheets_reports_timesheet"
-                action="action_project_resource_plan_report"
-                sequence="45" />
+	<!-- Menu Item -->
+	<menuitem id="menu_project_resource_plan_report"
+		name="Project Resource Analysis"
+		parent="hr_timesheet.menu_timesheets_reports_timesheet"
+		action="action_project_resource_plan_report"
+		sequence="45" />
 
 </odoo>
